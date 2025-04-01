@@ -1,10 +1,11 @@
 "use client";
 import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import Select from "react-select";
-
+import dynamic from "next/dynamic";
 import "@/app/sass/csvUploader.scss";
 import { Download } from "react-feather";
+
+const Select = dynamic(() => import("react-select"), { ssr: false });
 
 const options = [
   { value: "Stock In", label: "Stock In" },
@@ -72,8 +73,35 @@ const FileUpload = () => {
       "Quantity",
       "Stock Alert",
     ];
-    const csvContent =
-      "data:text/csv;charset=utf-8," + headers.join(",") + "\n";
+
+    const sampleData = [
+      ["Example Product 1", "box", "100", "80", "50", "5"],
+      ["Example Product 2", "bottle", "200", "150", "30", "10"],
+    ];
+
+    // Add a list of all available units at the bottom of the CSV
+    const unitOptions = [
+      "Available Units:",
+      "box",
+      "bottle",
+      "packet",
+      "carton",
+      "dozen",
+      "gram",
+      "kilogram",
+      "liter",
+      "milliliter",
+      "piece",
+      "set",
+    ];
+
+    let csvContent =
+      "data:text/csv;charset=utf-8," +
+      headers.join(",") +
+      "\n" +
+      sampleData.map((row) => row.join(",")).join("\n") +
+      "\n\n" +
+      unitOptions.join(",");
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
